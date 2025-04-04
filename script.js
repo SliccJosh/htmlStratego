@@ -6,6 +6,17 @@ const colorSelection = document.getElementById('color-selection');
 const chooseRedButton = document.getElementById('choose-red');
 const chooseBlueButton = document.getElementById('choose-blue');
 const pieceSelection = document.getElementById('piece-selection');
+const contextMenu = document.createElement('div');
+contextMenu.classList.add('context-menu');
+document.body.appendChild(contextMenu);
+const boardContainer = document.createElement('div');
+boardContainer.classList.add('board-container');
+setupBoard.parentNode.insertBefore(boardContainer, setupBoard);
+boardContainer.appendChild(setupBoard);
+
+gameBoard.parentNode.insertBefore(boardContainer.cloneNode(true), gameBoard);
+gameBoard.parentElement.removeChild(gameBoard);
+boardContainer.cloneNode(true).appendChild(gameBoard);
 
 const pieces = {
     red: [
@@ -89,6 +100,7 @@ function renderSetupBoard() {
             cell.dataset.col = col;
             cell.addEventListener('dragover', onDragOver);
             cell.addEventListener('drop', onDrop);
+            cell.addEventListener('contextmenu', onRightClick);
             if (userSetup[row][col]) {
                 const piece = document.createElement('div');
                 piece.classList.add('piece', userColor);
@@ -162,6 +174,7 @@ function renderBoard() {
             cell.dataset.row = row;
             cell.dataset.col = col;
             cell.addEventListener('click', onCellClick);
+            cell.addEventListener('contextmenu', onRightClick);
             if (board[row][col]) {
                 const piece = document.createElement('div');
                 piece.classList.add('piece', board[row][col].player);
@@ -336,6 +349,37 @@ function resetGame() {
     initializeBoard();
 }
 
-startGameButton.addEventListener('click', startGame);
+function onRightClick(event) {
+    event.preventDefault();
+    const cell = event.currentTarget;
+    const row = parseInt(cell.dataset.row);
+    const col = parseInt(cell.dataset.col);
 
-initializeBoard();
+    if (userSetup[row][col]) {
+        showContextMenu(event, row, col);
+    }
+}
+
+function showContextMenu(event, row, col) {
+    contextMenu.innerHTML = '';
+    const removeItem = document.createElement('div');
+    removeItem.classList.add('context-menu__item');
+    removeItem.textContent = 'Remove Piece';
+    removeItem.addEventListener('click', () => {
+        removePiece(row, col);
+        contextMenu.style.display = 'none';
+    });
+
+    contextMenu.appendChild(removeItem);
+
+    contextMenu.style.top = `${event.clientY}px`;
+    contextMenu.style.left = `${event.clientX}px`;
+    contextMenu.style.display = 'block';
+
+    document.addEventListener('click', hideContextMenu);
+}
+
+function hideContextMenu() {
+    contextMenu.style.display = 'none';
+    document.removeEventListener('click', hideContextMenu);
+}
