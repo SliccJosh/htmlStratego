@@ -5,6 +5,7 @@ const startGameButton = document.getElementById('start-game');
 const colorSelection = document.getElementById('color-selection');
 const chooseRedButton = document.getElementById('choose-red');
 const chooseBlueButton = document.getElementById('choose-blue');
+const pieceSelection = document.getElementById('piece-selection');
 
 const pieces = {
     red: [
@@ -55,9 +56,10 @@ function chooseColor(color) {
     userColor = color;
     computerColor = color === 'red' ? 'blue' : 'red';
     colorSelection.style.display = 'none';
-    setupBoard.style.display = 'grid';
+    document.getElementById('setup-container').style.display = 'flex';
     startGameButton.style.display = 'block';
     renderSetupBoard();
+    renderPieceSelection();
 }
 
 function initializeBoard() {
@@ -85,9 +87,8 @@ function renderSetupBoard() {
             cell.classList.add('cell');
             cell.dataset.row = row;
             cell.dataset.col = col;
-            if ((userColor === 'red' && row < 4) || (userColor === 'blue' && row >= 6)) {
-                cell.addEventListener('click', onSetupCellClick);
-            }
+            cell.addEventListener('dragover', onDragOver);
+            cell.addEventListener('drop', onDrop);
             if (userSetup[row][col]) {
                 const piece = document.createElement('div');
                 piece.classList.add('piece', userColor);
@@ -97,35 +98,48 @@ function renderSetupBoard() {
             setupBoard.appendChild(cell);
         }
     }
-    renderPieceSelection();
 }
 
-function onSetupCellClick(event) {
-    const cell = event.currentTarget;
-    const row = parseInt(cell.dataset.row);
-    const col = parseInt(cell.dataset.col);
+function renderPieceSelection() {
+    pieceSelection.innerHTML = '';
+    pieces[userColor].forEach(piece => {
+        for (let i = 0; i < piece.count; i++) {
+            const pieceDiv = document.createElement('div');
+            pieceDiv.classList.add('piece', userColor);
+            pieceDiv.textContent = piece.rank;
+            pieceDiv.draggable = true;
+            pieceDiv.dataset.type = piece.type;
+            pieceDiv.dataset.rank = piece.rank;
+            pieceDiv.addEventListener('dragstart', onDragStart);
+            pieceSelection.appendChild(pieceDiv);
+        }
+    });
+}
 
-    if (selectedPiece) {
-        userSetup[row][col] = { ...selectedPiece, player: userColor };
+function onDragStart(event) {
+    event.dataTransfer.setData('text/plain', JSON.stringify({
+        type: event.target.dataset.type,
+        rank: event.target.dataset.rank
+    }));
+}
+
+function onDragOver(event) {
+    event.preventDefault();
+}
+
+function onDrop(event) {
+    event.preventDefault();
+    const data = JSON.parse(event.dataTransfer.getData('text/plain'));
+    const row = parseInt(event.target.dataset.row);
+    const col = parseInt(event.target.dataset.col);
+    if ((userColor === 'red' && row < 4) || (userColor === 'blue' && row >= 6)) {
+        userSetup[row][col] = { type: data.type, rank: data.rank, player: userColor };
         renderSetupBoard();
     }
 }
 
-function renderPieceSelection() {
-    const pieceSelection = document.getElementById('piece-selection');
-    pieceSelection.innerHTML = '';
-    pieces[userColor].forEach(piece => {
-        const pieceButton = document.createElement('button');
-        pieceButton.textContent = `${piece.type} (${piece.count})`;
-        pieceButton.addEventListener('click', () => {
-            selectedPiece = piece;
-        });
-        pieceSelection.appendChild(pieceButton);
-    });
-}
-
 function startGame() {
-    setupBoard.style.display = 'none';
+    document.getElementById('setup-container').style.display = 'none';
     gameBoard.style.display = 'grid';
     for (let row = 0; row < boardSize; row++) {
         for (let col = 0; col < boardSize; col++) {
