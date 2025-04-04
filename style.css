@@ -21,13 +21,3 @@ body {
     grid-template-columns: repeat(10, 70px); /* Increased grid size */
     grid-template-rows: repeat(10, 70px); /* Increased grid size */
     gap: 2px;
-    margin: 0 auto;
-}
-
-.cell {
-    width: 70px; /* Increased cell size */
-    height: 70px; /* Increased cell size */
-    background-color: transparent; /* Make the cell background transparent */
-    display: flex;
-    align-items: center;
-    justify-content: center;
