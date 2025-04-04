@@ -371,4 +371,23 @@ function showContextMenu(event, row, col) {
     contextMenu.style.left = `${event.clientX}px`;
     contextMenu.style.display = 'block';
 
-    document.addEventListener('click', hideContextMenu
+    document.addEventListener('click', hideContextMenu);
+}
+
+function hideContextMenu() {
+    contextMenu.style.display = 'none';
+    document.removeEventListener('click', hideContextMenu);
+}
+
+function removePiece(row, col) {
+    const piece = userSetup[row][col];
+    userSetup[row][col] = null;
+    pieces[userColor].find(p => p.rank === piece.rank).count++;
+    renderSetupBoard();
+    renderPieceSelection();
+}
+
+startGameButton.addEventListener('click', startGame);
+
+initializeBoard();
+``
