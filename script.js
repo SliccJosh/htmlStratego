@@ -345,4 +345,59 @@ function updateDifficultyLevel() {
             difficultyLevel = Math.max(1, difficultyLevel - 1);
         }
     }
-    
+}
+
+function resetGame() {
+    board = Array(boardSize).fill(null).map(() => Array(boardSize).fill(null));
+    userSetup = Array(boardSize).fill(null).map(() => Array(boardSize).fill(null));
+    selectedPiece = null;
+    currentPlayer = 'user';
+    initializeBoard();
+}
+
+function onRightClick(event) {
+    event.preventDefault();
+    const cell = event.currentTarget;
+    const row = parseInt(cell.dataset.row);
+    const col = parseInt(cell.dataset.col);
+
+    if (userSetup[row][col]) {
+        showContextMenu(event, row, col);
+    }
+}
+
+function showContextMenu(event, row, col) {
+    contextMenu.innerHTML = '';
+    const removeItem = document.createElement('div');
+    removeItem.classList.add('context-menu__item');
+    removeItem.textContent = 'Remove Piece';
+    removeItem.addEventListener('click', () => {
+        removePiece(row, col);
+        contextMenu.style.display = 'none';
+    });
+
+    contextMenu.appendChild(removeItem);
+
+    contextMenu.style.top = `${event.clientY}px`;
+    contextMenu.style.left = `${event.clientX}px`;
+    contextMenu.style.display = 'block';
+
+    document.addEventListener('click', hideContextMenu);
+}
+
+function hideContextMenu() {
+    contextMenu.style.display = 'none';
+    document.removeEventListener('click', hideContextMenu);
+}
+
+function removePiece(row, col) {
+    const piece = userSetup[row][col];
+    userSetup[row][col] = null;
+    pieces[userColor].find(p => p.rank === piece.rank).count++;
+    renderSetupBoard();
+    renderPieceSelection();
+}
+
+startGameButton.addEventListener('click', startGame);
+
+initializeBoard();
