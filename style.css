@@ -13,6 +13,7 @@ body {
     display: flex;
     justify-content: center;
     align-items: center;
+    height: 100vh; /* Ensure the container takes full height of the viewport */
 }
 
 .board {
@@ -21,77 +22,5 @@ body {
     grid-template-rows: repeat(10, 50px);
     gap: 2px;
     margin: 0 auto;
-    padding: 10px;
     background-image: url('board_image.png');
-    background-size: 500px 500px; /* Align the image with the grid */
-    background-position: center;
-}
-
-.cell {
-    width: 50px;
-    height: 50px;
-    background-color: transparent; /* Make the cell background transparent */
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    cursor: pointer;
-    border: 1px solid #000;
-    position: relative;
-}
-
-.piece {
-    width: 40px;
-    height: 40px;
-    border-radius: 50%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-weight: bold;
-    color: #fff;
-    background-color: #888;
-    margin: 5px;
-    cursor: pointer;
-}
-
-.piece.red {
-    background-color: red;
-}
-
-.piece.blue {
-    background-color: blue;
-}
-
-.piece.selected {
-    border: 2px solid yellow;
-}
-
-.pieces {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    margin-left: 20px;
-}
-
-.context-menu {
-    display: none;
-    position: absolute;
-    z-index: 1000;
-    width: 100px;
-    background-color: white;
-    border: 1px solid #ccc;
-    box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.2);
-}
-
-.context-menu__item {
-    padding: 8px;
-    cursor: pointer;
-}
-
-.context-menu__item:hover {
-    background-color: #f0f0f0;
-}
-
-button {
-    padding: 10px 20px;
-    cursor: pointer;
-}
+    background-size: 500px 500px; /* Align
