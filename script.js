@@ -9,32 +9,32 @@ const pieceSelection = document.getElementById('piece-selection');
 
 const pieces = {
     red: [
-        { type: 'Flag', rank: 0, count: 1 },
-        { type: 'Spy', rank: 1, count: 1 },
-        { type: 'Scout', rank: 2, count: 8 },
-        { type: 'Miner', rank: 3, count: 5 },
-        { type: 'Sergeant', rank: 4, count: 4 },
-        { type: 'Lieutenant', rank: 5, count: 4 },
-        { type: 'Captain', rank: 6, count: 4 },
-        { type: 'Major', rank: 7, count: 3 },
-        { type: 'Colonel', rank: 8, count: 2 },
-        { type: 'General', rank: 9, count: 1 },
-        { type: 'Marshal', rank: 10, count: 1 },
-        { type: 'Bomb', rank: 11, count: 6 }
+        { type: 'Flag', rank: 0, abbr: 'F', count: 1 },
+        { type: 'Spy', rank: 1, abbr: 'S', count: 1 },
+        { type: 'Scout', rank: 2, abbr: 'Sc', count: 8 },
+        { type: 'Miner', rank: 3, abbr: 'M', count: 5 },
+        { type: 'Sergeant', rank: 4, abbr: 'Sgt', count: 4 },
+        { type: 'Lieutenant', rank: 5, abbr: 'Lt', count: 4 },
+        { type: 'Captain', rank: 6, abbr: 'Cpt', count: 4 },
+        { type: 'Major', rank: 7, abbr: 'Maj', count: 3 },
+        { type: 'Colonel', rank: 8, abbr: 'Col', count: 2 },
+        { type: 'General', rank: 9, abbr: 'Gen', count: 1 },
+        { type: 'Marshal', rank: 10, abbr: 'Mar', count: 1 },
+        { type: 'Bomb', rank: 11, abbr: 'B', count: 6 }
     ],
     blue: [
-        { type: 'Flag', rank: 0, count: 1 },
-        { type: 'Spy', rank: 1, count: 1 },
-        { type: 'Scout', rank: 2, count: 8 },
-        { type: 'Miner', rank: 3, count: 5 },
-        { type: 'Sergeant', rank: 4, count: 4 },
-        { type: 'Lieutenant', rank: 5, count: 4 },
-        { type: 'Captain', rank: 6, count: 4 },
-        { type: 'Major', rank: 7, count: 3 },
-        { type: 'Colonel', rank: 8, count: 2 },
-        { type: 'General', rank: 9, count: 1 },
-        { type: 'Marshal', rank: 10, count: 1 },
-        { type: 'Bomb', rank: 11, count: 6 }
+        { type: 'Flag', rank: 0, abbr: 'F', count: 1 },
+        { type: 'Spy', rank: 1, abbr: 'S', count: 1 },
+        { type: 'Scout', rank: 2, abbr: 'Sc', count: 8 },
+        { type: 'Miner', rank: 3, abbr: 'M', count: 5 },
+        { type: 'Sergeant', rank: 4, abbr: 'Sgt', count: 4 },
+        { type: 'Lieutenant', rank: 5, abbr: 'Lt', count: 4 },
+        { type: 'Captain', rank: 6, abbr: 'Cpt', count: 4 },
+        { type: 'Major', rank: 7, abbr: 'Maj', count: 3 },
+        { type: 'Colonel', rank: 8, abbr: 'Col', count: 2 },
+        { type: 'General', rank: 9, abbr: 'Gen', count: 1 },
+        { type: 'Marshal', rank: 10, abbr: 'Mar', count: 1 },
+        { type: 'Bomb', rank: 11, abbr: 'B', count: 6 }
     ]
 };
 
@@ -92,7 +92,7 @@ function renderSetupBoard() {
             if (userSetup[row][col]) {
                 const piece = document.createElement('div');
                 piece.classList.add('piece', userColor);
-                piece.textContent = userSetup[row][col].rank;
+                piece.textContent = userSetup[row][col].abbr;
                 cell.appendChild(piece);
             }
             setupBoard.appendChild(cell);
@@ -106,10 +106,11 @@ function renderPieceSelection() {
         for (let i = 0; i < piece.count; i++) {
             const pieceDiv = document.createElement('div');
             pieceDiv.classList.add('piece', userColor);
-            pieceDiv.textContent = piece.rank;
+            pieceDiv.textContent = piece.abbr;
             pieceDiv.draggable = true;
             pieceDiv.dataset.type = piece.type;
             pieceDiv.dataset.rank = piece.rank;
+            pieceDiv.dataset.abbr = piece.abbr;
             pieceDiv.addEventListener('dragstart', onDragStart);
             pieceSelection.appendChild(pieceDiv);
         }
@@ -119,7 +120,8 @@ function renderPieceSelection() {
 function onDragStart(event) {
     event.dataTransfer.setData('text/plain', JSON.stringify({
         type: event.target.dataset.type,
-        rank: event.target.dataset.rank
+        rank: event.target.dataset.rank,
+        abbr: event.target.dataset.abbr
     }));
 }
 
@@ -132,8 +134,8 @@ function onDrop(event) {
     const data = JSON.parse(event.dataTransfer.getData('text/plain'));
     const row = parseInt(event.target.dataset.row);
     const col = parseInt(event.target.dataset.col);
-    if ((userColor === 'red' && row < 4) || (userColor === 'blue' && row >= 6)) {
-        userSetup[row][col] = { type: data.type, rank: data.rank, player: userColor };
+    if ((userColor === 'red' && row >= 6) || (userColor === 'blue' && row < 4)) {
+        userSetup[row][col] = { type: data.type, rank: data.rank, abbr: data.abbr, player: userColor };
         renderSetupBoard();
     }
 }
@@ -143,7 +145,7 @@ function startGame() {
     gameBoard.style.display = 'grid';
     for (let row = 0; row < boardSize; row++) {
         for (let col = 0; col < boardSize; col++) {
-            if ((userColor === 'red' && row < 4) || (userColor === 'blue' && row >= 6)) {
+            if ((userColor === 'red' && row >= 6) || (userColor === 'blue' && row < 4)) {
                 board[row][col] = userSetup[row][col];
             }
         }
@@ -163,7 +165,7 @@ function renderBoard() {
             if (board[row][col]) {
                 const piece = document.createElement('div');
                 piece.classList.add('piece', board[row][col].player);
-                piece.textContent = (board[row][col].player === userColor || currentPlayer === 'user') ? board[row][col].rank : '?';
+                piece.textContent = (board[row][col].player === userColor || currentPlayer === 'user') ? board[row][col].abbr : '?';
                 cell.appendChild(piece);
             }
             gameBoard.appendChild(cell);
