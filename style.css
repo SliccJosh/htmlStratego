@@ -16,15 +16,15 @@ body {
     gap: 2px;
     margin: 0 auto;
     padding: 10px;
-    background-color: #333;
-    background-size: cover;
+    background-image: url('board_image.png');
+    background-size: 500px 500px; /* Align the image with the grid */
     background-position: center;
 }
 
 .cell {
     width: 50px;
     height: 50px;
-    background-color: #fff;
+    background-color: transparent; /* Make the cell background transparent */
     display: flex;
     align-items: center;
     justify-content: center;
