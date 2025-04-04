@@ -3,6 +3,12 @@ body {
     text-align: center;
 }
 
+#setup-container {
+    display: flex;
+    justify-content: center;
+    align-items: flex-start;
+}
+
 .board {
     display: grid;
     grid-template-columns: repeat(10, 50px);
@@ -36,6 +42,8 @@ body {
     font-weight: bold;
     color: #fff;
     background-color: #888;
+    margin: 5px;
+    cursor: pointer;
 }
 
 .piece.red {
@@ -50,11 +58,11 @@ body {
     border: 2px solid yellow;
 }
 
-#piece-selection {
-    margin: 20px auto;
+.pieces {
     display: flex;
-    justify-content: center;
-    gap: 10px;
+    flex-direction: column;
+    align-items: center;
+    margin-left: 20px;
 }
 
 button {
