@@ -9,14 +9,6 @@ const pieceSelection = document.getElementById('piece-selection');
 const contextMenu = document.createElement('div');
 contextMenu.classList.add('context-menu');
 document.body.appendChild(contextMenu);
-const boardContainer = document.createElement('div');
-boardContainer.classList.add('board-container');
-setupBoard.parentNode.insertBefore(boardContainer, setupBoard);
-boardContainer.appendChild(setupBoard);
-
-gameBoard.parentNode.insertBefore(boardContainer.cloneNode(true), gameBoard);
-gameBoard.parentElement.removeChild(gameBoard);
-boardContainer.cloneNode(true).appendChild(gameBoard);
 
 const pieces = {
     red: [
@@ -148,7 +140,10 @@ function onDrop(event) {
     const col = parseInt(event.target.dataset.col);
     if ((userColor === 'red' && row >= 6) || (userColor === 'blue' && row < 4)) {
         userSetup[row][col] = { type: data.type, rank: data.rank, abbr: data.abbr, player: userColor };
+        // Remove the piece from the inventory
+        pieces[userColor].find(p => p.rank === data.rank).count--;
         renderSetupBoard();
+        renderPieceSelection();
     }
 }
 
@@ -383,3 +378,15 @@ function hideContextMenu() {
     contextMenu.style.display = 'none';
     document.removeEventListener('click', hideContextMenu);
 }
+
+function removePiece(row, col) {
+    const piece = userSetup[row][col];
+    userSetup[row][col] = null;
+    pieces[userColor].find(p => p.rank === piece.rank).count++;
+    renderSetupBoard();
+    renderPieceSelection();
+}
+
+startGameButton.addEventListener('click', startGame);
+
+initializeBoard();
