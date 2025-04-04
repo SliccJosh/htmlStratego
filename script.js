@@ -138,18 +138,23 @@ function onDrop(event) {
     const data = JSON.parse(event.dataTransfer.getData('text/plain'));
     const row = parseInt(event.target.dataset.row);
     const col = parseInt(event.target.dataset.col);
+    
+    // Ensure the piece is placed in the correct area
     if ((userColor === 'red' && row >= 6) || (userColor === 'blue' && row < 4)) {
-        userSetup[row][col] = { type: data.type, rank: data.rank, abbr: data.abbr, player: userColor };
-        // Remove the piece from the inventory
-        const pieceIndex = pieces[userColor].findIndex(p => p.rank === data.rank && p.abbr === data.abbr);
-        if (pieceIndex !== -1) {
-            pieces[userColor][pieceIndex].count--;
-            if (pieces[userColor][pieceIndex].count === 0) {
-                pieces[userColor].splice(pieceIndex, 1);
+        if (!userSetup[row][col]) { // Ensure the cell is empty
+            userSetup[row][col] = { type: data.type, rank: data.rank, abbr: data.abbr, player: userColor };
+            
+            // Decrease the piece count or remove the piece from the inventory
+            const pieceIndex = pieces[userColor].findIndex(p => p.rank === data.rank && p.abbr === data.abbr);
+            if (pieceIndex !== -1) {
+                pieces[userColor][pieceIndex].count--;
+                if (pieces[userColor][pieceIndex].count === 0) {
+                    pieces[userColor].splice(pieceIndex, 1);
+                }
             }
+            renderSetupBoard();
+            renderPieceSelection();
         }
-        renderSetupBoard();
-        renderPieceSelection();
     }
 }
 
@@ -298,7 +303,7 @@ function computerMove() {
     if (possibleMoves.length > 0) {
         const move = possibleMoves[Math.floor(Math.random() * possibleMoves.length)];
         movePiece(move.fromRow, move.fromCol, move.toRow, move.toCol);
-        gameHistory.push({ player: 'computer', from: [move.fromRow, move.fromCol], to: [move.toRow, move.toCol] });
+        gameHistory.push({ player: 'computer', from: [move.fromRow, fromCol], to: [move.toRow, toCol] });
         moved = true;
         currentPlayer = 'user';
     }
@@ -340,59 +345,4 @@ function updateDifficultyLevel() {
             difficultyLevel = Math.max(1, difficultyLevel - 1);
         }
     }
-}
-
-function resetGame() {
-    board = Array(boardSize).fill(null).map(() => Array(boardSize).fill(null));
-    userSetup = Array(boardSize).fill(null).map(() => Array(boardSize).fill(null));
-    selectedPiece = null;
-    currentPlayer = 'user';
-    initializeBoard();
-}
-
-function onRightClick(event) {
-    event.preventDefault();
-    const cell = event.currentTarget;
-    const row = parseInt(cell.dataset.row);
-    const col = parseInt(cell.dataset.col);
-
-    if (userSetup[row][col]) {
-        showContextMenu(event, row, col);
-    }
-}
-
-function showContextMenu(event, row, col) {
-    contextMenu.innerHTML = '';
-    const removeItem = document.createElement('div');
-    removeItem.classList.add('context-menu__item');
-    removeItem.textContent = 'Remove Piece';
-    removeItem.addEventListener('click', () => {
-        removePiece(row, col);
-        contextMenu.style.display = 'none';
-    });
-
-    contextMenu.appendChild(removeItem);
-
-    contextMenu.style.top = `${event.clientY}px`;
-    contextMenu.style.left = `${event.clientX}px`;
-    contextMenu.style.display = 'block';
-
-    document.addEventListener('click', hideContextMenu);
-}
-
-function hideContextMenu() {
-    contextMenu.style.display = 'none';
-    document.removeEventListener('click', hideContextMenu);
-}
-
-function removePiece(row, col) {
-    const piece = userSetup[row][col];
-    userSetup[row][col] = null;
-    pieces[userColor].find(p => p.rank === piece.rank).count++;
-    renderSetupBoard();
-    renderPieceSelection();
-}
-
-startGameButton.addEventListener('click', startGame);
-
-initializeBoard();
+    
