@@ -17,20 +17,16 @@ body {
 }
 
 .board {
-    position: relative; /* Ensure the board is positioned relative to its container */
     display: grid;
-    grid-template-columns: repeat(10, 50px);
-    grid-template-rows: repeat(10, 50px);
+    grid-template-columns: repeat(10, 70px); /* Increased grid size */
+    grid-template-rows: repeat(10, 70px); /* Increased grid size */
     gap: 2px;
     margin: 0 auto;
-    background-image: url('board_image.png');
-    background-size: 500px 500px; /* Align the image with the grid */
-    background-position: center;
 }
 
 .cell {
-    width: 50px;
-    height: 50px;
+    width: 70px; /* Increased cell size */
+    height: 70px; /* Increased cell size */
     background-color: transparent; /* Make the cell background transparent */
     display: flex;
     align-items: center;
@@ -41,8 +37,8 @@ body {
 }
 
 .piece {
-    width: 40px;
-    height: 40px;
+    width: 60px; /* Increased piece size */
+    height: 60px; /* Increased piece size */
     border-radius: 50%;
     display: flex;
     align-items: center;
