@@ -141,7 +141,13 @@ function onDrop(event) {
     if ((userColor === 'red' && row >= 6) || (userColor === 'blue' && row < 4)) {
         userSetup[row][col] = { type: data.type, rank: data.rank, abbr: data.abbr, player: userColor };
         // Remove the piece from the inventory
-        pieces[userColor].find(p => p.rank === data.rank).count--;
+        const pieceIndex = pieces[userColor].findIndex(p => p.rank === data.rank && p.abbr === data.abbr);
+        if (pieceIndex !== -1) {
+            pieces[userColor][pieceIndex].count--;
+            if (pieces[userColor][pieceIndex].count === 0) {
+                pieces[userColor].splice(pieceIndex, 1);
+            }
+        }
         renderSetupBoard();
         renderPieceSelection();
     }
@@ -390,4 +396,3 @@ function removePiece(row, col) {
 startGameButton.addEventListener('click', startGame);
 
 initializeBoard();
-``
